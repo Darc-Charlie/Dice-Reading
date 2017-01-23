@@ -13,6 +13,7 @@ GPIO.setup(31, GPIO.OUT)
 GPIO.setup(33, GPIO.OUT)
 GPIO.setup(35, GPIO.OUT)
 GPIO.setup(37, GPIO.OUT)
+GPIO.setup(36, GPIO.OUT)
 GPIO.setup(38, GPIO.OUT)
 GPIO.setup(40, GPIO.OUT)
 
@@ -35,8 +36,10 @@ def g(x):
 while True:
     state = GPIO.input(32)
     
-    if state is True:    
+    if state is True:
+        GPIO.output(36,1)
         os.system("fswebcam -S 80 --no-banner testimage.jpg")
+        GPIO.output(36,0)
         img = cv2.imread("testimage.jpg")
         img = cv2.resize(img, (340, 340))
 
