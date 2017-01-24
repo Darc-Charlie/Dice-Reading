@@ -36,7 +36,7 @@ def g(x):
 while True:
     state = GPIO.input(32)
     
-    if state is True:
+    if state:
         GPIO.output(36,1)
         os.system("fswebcam -S 80 --no-banner testimage.jpg")
         GPIO.output(36,0)
@@ -177,8 +177,4 @@ while True:
             g(1)
 
         state = False
-        GPIO.cleanup()
         break
-        
-    else:
-        continue
