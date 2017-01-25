@@ -7,7 +7,7 @@ import RPi.GPIO as GPIO
 print cv2.__version__
 
 GPIO.setmode(GPIO.BOARD)
-GPIO.setup(32, GPIO.IN)
+GPIO.setup(32, GPIO.IN, GPIO.PUD_DOWN)
 GPIO.setup(29, GPIO.OUT)
 GPIO.setup(31, GPIO.OUT)
 GPIO.setup(33, GPIO.OUT)
