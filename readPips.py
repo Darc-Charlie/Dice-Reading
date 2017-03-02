@@ -16,20 +16,15 @@ GPIO.setup(36, GPIO.OUT)
 GPIO.setup(38, GPIO.OUT)
 GPIO.setup(40, GPIO.OUT)
 
-def a(x):
-    GPIO.output(29,x)
-def b(x):
-    GPIO.output(31,x)
-def c(x):
-    GPIO.output(33,x)
-def d(x):
-    GPIO.output(35,x)
-def e(x):
-    GPIO.output(37,x)
-def f(x):
-    GPIO.output(38,x)
-def g(x):
-    GPIO.output(40,x)
+
+a = 29
+b = 31
+c = 33
+d = 35
+e = 37
+f = 38
+g = 40
+
     
     
 while True:
@@ -50,13 +45,13 @@ while True:
 
         circles = np.uint16(np.around(circles))
 
-        a=circles[0][0][0] + 140
-        b=circles[0][0][0] - 140
-        c=circles[0][0][1] + 140
-        d=circles[0][0][1] - 140
+        an=circles[0][0][0] + 140
+        bn=circles[0][0][0] - 140
+        cn=circles[0][0][1] + 140
+        dn=circles[0][0][1] - 140
 
         for i in circles[0,:]:
-            if i[0] >= b and i[0] <= a and i[1] >= d and i[1] <= c :
+            if i[0] >= bn and i[0] <= an and i[1] >= dn and i[1] <= cn :
                 continue
             else:
                 i[0] = 0
@@ -68,68 +63,67 @@ while True:
                 count += 1
 
         if count == 1:
-            #GPIO.output(29,1)
-	    a(1)
-            b(0)
-            c(0)
-            d(1)
-            e(1)
-            f(1)
-            g(1)
+	    GPIO.output(a,1)
+	    GPIO.output(b,0)
+	    GPIO.output(c,0)
+	    GPIO.output(d,1)
+            GPIO.output(e,1)
+            GPIO.output(f,1)
+            GPIO.output(g,1)
 
         elif count == 2:
-            a(0)
-            b(0)
-            c(1)
-            d(0)
-            e(0)
-            f(1)
-            g(0)
+            GPIO.output(a,0)
+	    GPIO.output(b,0)
+	    GPIO.output(c,1)
+	    GPIO.output(d,0)
+            GPIO.output(e,0)
+            GPIO.output(f,1)
+            GPIO.output(g,0)
 
         elif count == 3:
-            a(0)
-            b(0)
-            c(0)
-            d(0)
-            e(1)
-            f(1)
-            g(0)
+            GPIO.output(a,0)
+            GPIO.output(b,0)
+            GPIO.output(c,0)
+            GPIO.output(d,0)
+            GPIO.output(e,1)
+            GPIO.output(f,1)
+            GPIO.output(g,0)
 
         elif count == 4:
-            a(1)
-            b(0)
-            c(0)
-            d(1)
-            e(1)
-            f(0)
-            g(0)
+            GPIO.output(a,1)
+            GPIO.output(b,0)
+            GPIO.output(c,0)
+            GPIO.output(d,1)
+            GPIO.output(e,1)
+            GPIO.output(f,0)
+            GPIO.output(g,0)
 
         elif count == 5:
-            a(0)
-            b(1)
-            c(0)
-            d(0)
-            e(1)
-            f(0)
-            g(0)
+            GPIO.output(a,0)
+            GPIO.output(b,1)
+            GPIO.output(c,0)
+            GPIO.output(d,0)
+            GPIO.output(e,1)
+            GPIO.output(f,0)
+            GPIO.output(g,0)
 
         elif count == 6:
-            a(1)
-            b(1)
-            c(0)
-            d(0)
-            e(0)
-            f(0)
-            g(0)
+            GPIO.output(a,1)
+            GPIO.output(b,1)
+            GPIO.output(c,0)
+            GPIO.output(d,0)
+            GPIO.output(e,0)
+            GPIO.output(f,0)
+            GPIO.output(g,0)
 
         else:
-            a(0)
-            b(0)
-            c(0)
-            d(0)
-            e(0)
-            f(0)
-            g(1)
+            GPIO.output(a,0)
+            GPIO.output(b,0)
+            GPIO.output(c,0)
+            GPIO.output(d,0)
+            GPIO.output(e,0)
+            GPIO.output(f,0)
+            GPIO.output(g,1)
 
         state = False
         break
