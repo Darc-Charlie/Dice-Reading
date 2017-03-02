@@ -37,7 +37,7 @@ while True:
     
     if state:
         GPIO.output(36,1)
-        os.system("fswebcam -S 120 -r 800x600 --no-banner testimage.jpg")
+        os.system("fswebcam -S 150 -r 800x600 --fps 12 --no-banner testimage.jpg")
         GPIO.output(36,0)
         img = cv2.imread('testimage.jpg',0)
         img = cv2.resize(img, (1280, 960))
@@ -67,8 +67,9 @@ while True:
             if j[0] != 0:
                 count += 1
 
-        if count is 1:
-            a(1)
+        if count == 1:
+            #GPIO.output(29,1)
+	    a(1)
             b(0)
             c(0)
             d(1)
@@ -76,7 +77,7 @@ while True:
             f(1)
             g(1)
 
-        elif count is 2:
+        elif count == 2:
             a(0)
             b(0)
             c(1)
@@ -85,7 +86,7 @@ while True:
             f(1)
             g(0)
 
-        elif count is 3:
+        elif count == 3:
             a(0)
             b(0)
             c(0)
@@ -94,7 +95,7 @@ while True:
             f(1)
             g(0)
 
-        elif count is 4:
+        elif count == 4:
             a(1)
             b(0)
             c(0)
@@ -103,7 +104,7 @@ while True:
             f(0)
             g(0)
 
-        elif count is 5:
+        elif count == 5:
             a(0)
             b(1)
             c(0)
@@ -112,7 +113,7 @@ while True:
             f(0)
             g(0)
 
-        elif count is 6:
+        elif count == 6:
             a(1)
             b(1)
             c(0)
