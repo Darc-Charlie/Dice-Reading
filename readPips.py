@@ -67,7 +67,7 @@ while True:
             if j[0] != 0:
                 count += 1
 
-        if len(count) is 1:
+        if count is 1:
             a(1)
             b(0)
             c(0)
@@ -76,7 +76,7 @@ while True:
             f(1)
             g(1)
 
-        elif len(count) is 2:
+        elif count is 2:
             a(0)
             b(0)
             c(1)
@@ -85,7 +85,7 @@ while True:
             f(1)
             g(0)
 
-        elif len(count) is 3:
+        elif count is 3:
             a(0)
             b(0)
             c(0)
@@ -94,7 +94,7 @@ while True:
             f(1)
             g(0)
 
-        elif len(count) is 4:
+        elif count is 4:
             a(1)
             b(0)
             c(0)
@@ -103,7 +103,7 @@ while True:
             f(0)
             g(0)
 
-        elif len(count) is 5:
+        elif count is 5:
             a(0)
             b(1)
             c(0)
@@ -112,7 +112,7 @@ while True:
             f(0)
             g(0)
 
-        elif len(count) is 6:
+        elif count is 6:
             a(1)
             b(1)
             c(0)
