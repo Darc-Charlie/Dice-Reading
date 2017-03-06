@@ -3,6 +3,7 @@ import math
 import os
 import numpy as np
 import serial
+import struct
 
 port = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=5.0)
 os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
