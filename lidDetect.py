@@ -34,7 +34,7 @@ try:
     cv2.circle(cimg,(xCntr,yCntr),2,(181,38,213),3)
     distance = round(math.sqrt((pow(circles[0][0][0] - xCntr,2)) + (pow(circles[0][0][1] - yCntr,2))))
     print distance
-    port.write(struct.pack('>B', distance))
+    port.write(struct.pack('>B', int(distance)))
 
     for j in circles[0,:]:
         if j[0]-xCntr < 0:
