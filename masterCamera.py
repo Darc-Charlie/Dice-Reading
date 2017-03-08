@@ -29,6 +29,7 @@ while True:
 
         try:
 
+	    print "reading lid..."
             port = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=5.0)
             os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
             img = cv2.imread('testimage.jpg', 0)
@@ -87,9 +88,9 @@ while True:
                     else:
                         print 'down'
 
-            GPIO.output(14,1) #success
+            GPIO.output(13,1) #success
             time.sleep(3)
-            GPIO.output(14,0)
+            GPIO.output(13,0)
             break
 
         except AttributeError:
@@ -115,15 +116,15 @@ while True:
     if diestate:
 
         try:
+	    print "reading die..."
             os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
-            GPIO.output(36,0)
             img = cv2.imread('testimage.jpg',0)
             img = cv2.resize(img, (1280, 960))
             img = cv2.medianBlur(img,5)
             cimg = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
 
-            circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,50,
-                                        param1=50,param2=30,minRadius=15,maxRadius=35)
+            circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,10,
+                                        param1=50,param2=30,minRadius=15,maxRadius=20)
 
 
             circles = np.uint16(np.around(circles))
@@ -133,6 +134,7 @@ while True:
             cn=circles[0][0][1] + 140
             dn=circles[0][0][1] - 140
 
+	    print circles
             for i in circles[0,:]:
                 if i[0] >= bn and i[0] <= an and i[1] >= dn and i[1] <= cn :
                     continue
@@ -145,6 +147,8 @@ while True:
                 if j[0] != 0:
                     count += 1
 
+	    print circles
+	    print count, "pips"	
             if count == 1:
                 GPIO.output(a,1)
                 GPIO.output(b,0)
@@ -208,9 +212,9 @@ while True:
                 GPIO.output(f,0)
                 GPIO.output(g,1)
 
-            GPIO.output(14,1) #success
+            GPIO.output(13,1) #success
             time.sleep(3)
-            GPIO.output(14,0)
+            GPIO.output(13,0)
             break
         
         except AttributeError:
