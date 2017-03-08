@@ -1,9 +1,7 @@
 import cv2
-import math
 import os
 import numpy as np
 import serial
-import struct
 
 port = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=5.0)
 os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
@@ -24,27 +22,46 @@ circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT, 1,50,
 
 try:
     circles = np.uint16(np.around(circles))
-    print circles   
-    for i in circles[0,:]:
-        # draw the outer circle
-        cv2.circle(cimg,(i[0],i[1]),i[2],(0,255,0),2)
-        # draw the center of the circle
-        cv2.circle(cimg,(i[0],i[1]),2,(0,0,255),3)
+    
+    closerCirc = 1000
+    closerCircRadius = 0
 
-    cv2.circle(cimg,(xCntr,yCntr),2,(181,38,213),3)
-    distance = round(math.sqrt((pow(circles[0][0][0] - xCntr,2)) + (pow(circles[0][0][1] - yCntr,2))))
-    print distance
-    port.write(str(int(distance)))
+    print circles   
+    for j in circles[0,:]:
+        if abs(j[2] - 445) < closerCirc :
+            closerCirc = abs(j[2] - 445)
+            closerCircRadius = j[2]
+
+    for k in circles[0,:]:
+        if k[2] == closerCircRadius:
+            continue
+        else:
+            k[0] = 0
+            k[1] = 0
+            k[2] = 0
+    
+    print circles
+    for l in circles[0,:]:
+        if l[0] != 0:
+            x_dist = l[0] - xCntr
+            y_dist = l[1] - yCntr
+            
+    print "x-Dist:", x_dist
+    print "y-Dist:", y_dist
+    
+    port.write(str(int(x_dist)))
+    port.write(str(int(y_dist)))
 
     for j in circles[0,:]:
-        if j[0]-xCntr < 0:
-            print 'left'
-        else:
-            print 'right'
-        if j[1]-yCntr < 0:
-            print 'up'
-        else:
-            print 'down'
+        if j[0] != 0:
+            if j[0]-xCntr < 0:
+                print 'left'
+            else:
+                print 'right'
+            if j[1]-yCntr < 0:
+                print 'up'
+            else:
+                print 'down'
   
 except AttributeError:
     print "No cirles detected"
