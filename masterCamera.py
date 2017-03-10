@@ -26,10 +26,12 @@ while True:
     lidState = GPIO.input(32)
 
     if lidState:
+        GPIO.output(13,1) #success
+        time.sleep(3)
+        GPIO.output(13,0)
 
         try:
-
-	    print "reading lid..."
+            print "reading lid..."
             port = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=5.0)
             os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
             img = cv2.imread('testimage.jpg', 0)
@@ -70,10 +72,14 @@ while True:
                 if l[0] != 0:
                     x_dist = l[0] - xCntr
                     y_dist = l[1] - yCntr
+            
+            GPIO.output(13,1) #success
+            time.sleep(3)
+            GPIO.output(13,0)
 
             print "x-Dist:", x_dist
             print "y-Dist:", y_dist
-
+            
             port.write(str(int(x_dist)))
             port.write(str(int(y_dist)))
 
@@ -116,7 +122,7 @@ while True:
     if diestate:
 
         try:
-	    print "reading die..."
+            print "reading die..."
             os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
             img = cv2.imread('testimage.jpg',0)
             img = cv2.resize(img, (1280, 960))
@@ -129,12 +135,16 @@ while True:
 
             circles = np.uint16(np.around(circles))
 
+            GPIO.output(13,1) #success
+            time.sleep(3)
+            GPIO.output(13,0)
+
             an=circles[0][0][0] + 140
             bn=circles[0][0][0] - 140
             cn=circles[0][0][1] + 140
             dn=circles[0][0][1] - 140
-
-	    print circles
+            
+            print circles
             for i in circles[0,:]:
                 if i[0] >= bn and i[0] <= an and i[1] >= dn and i[1] <= cn :
                     continue

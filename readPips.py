@@ -32,7 +32,7 @@ while True:
     
     if state:
         GPIO.output(36,1)
-        #os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
+        os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
         GPIO.output(36,0)
         img = cv2.imread('testimage.jpg',0)
         img = cv2.resize(img, (1280, 960))
