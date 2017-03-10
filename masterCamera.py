@@ -22,9 +22,9 @@ GPIO.setup(37, GPIO.OUT)
 GPIO.setup(38, GPIO.OUT)
 GPIO.setup(40, GPIO.OUT)
 
-GPIO.output(11,0)
-GPIO.output(13,0)
-GPIO.output(15,0)
+GPIO.output(11, 0)
+GPIO.output(13, 0)
+GPIO.output(15, 0)
 print "waiting to read lid..."
 
 while True:
@@ -34,9 +34,9 @@ while True:
         try:
             port = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=5.0)
 
-            GPIO.output(13,1) #success
+            GPIO.output(13, 1) #success
             time.sleep(0.003)
-            GPIO.output(13,0)
+            GPIO.output(13, 0)
             port.write("#")
 
             os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
@@ -52,7 +52,7 @@ while True:
             img = cv2.medianBlur(img, 5)
             cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
-            circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT, 1,50,
+            circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 50,
                                         param1=50, param2=30, minRadius=400, maxRadius=450)
 
 
@@ -60,12 +60,12 @@ while True:
 
             closerCirc = 1000
             closerCircRadius = 0
-            print circles   
-            for j in circles[0,:]:
-                if abs(j[2] - 445) < closerCirc :
+            print circles
+            for j in circles[0, :]:
+                if abs(j[2] - 445) < closerCirc:
                     closerCirc = abs(j[2] - 445)
                     closerCircRadius = j[2]
-            for k in circles[0,:]:
+            for k in circles[0, :]:
                 if k[2] == closerCircRadius:
                     continue
                 else:
@@ -74,22 +74,22 @@ while True:
                     k[2] = 0
 
             print circles
-            for l in circles[0,:]:
+            for l in circles[0, :]:
                 if l[0] != 0:
                     x_dist = l[0] - xCntr
                     y_dist = l[1] - yCntr
-            
-            GPIO.output(13,1) #success
+
+            GPIO.output(13, 1) #success
             time.sleep(0.003)
-            GPIO.output(13,0)
+            GPIO.output(13, 0)
 
             print "x-Dist:", x_dist
             print "y-Dist:", y_dist
-            
+
             port.write(str(int(x_dist)))
             port.write(str(int(y_dist)))
 
-            for j in circles[0,:]:
+            for j in circles[0, :]:
                 if j[0] != 0:
                     if j[0]-xCntr < 0:
                         print 'left'
@@ -100,18 +100,18 @@ while True:
                     else:
                         print 'down'
 
-            GPIO.output(13,1) #success
+            GPIO.output(13, 1) #success
             time.sleep(0.003)
-            GPIO.output(13,0)
+            GPIO.output(13, 0)
             break
 
         except AttributeError:
             print "No cirles detected"
             lidstate = False
-            GPIO.output(15,0)
-            GPIO.output(15,1)   #failure
+            GPIO.output(15, 0)
+            GPIO.output(15, 1)   #failure
             time.sleep(0.003)
-            GPIO.output(15,0)
+            GPIO.output(15, 0)
 
 
 a = 29
@@ -133,26 +133,26 @@ while True:
             os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
             img = cv2.imread('testimage.jpg',0)
             img = cv2.resize(img, (1280, 960))
-            img = cv2.medianBlur(img,5)
-            cimg = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
+            img = cv2.medianBlur(img, 5)
+            cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
-            circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,10,
-                                        param1=50,param2=30,minRadius=15,maxRadius=20)
+            circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 10,
+                                        param1=50, param2=30, minRadius=15, maxRadius=20)
 
 
             circles = np.uint16(np.around(circles))
 
-            GPIO.output(13,1) #success
+            GPIO.output(13, 1) #success
             time.sleep(3)
-            GPIO.output(13,0)
+            GPIO.output(13, 0)
 
-            an=circles[0][0][0] + 140
-            bn=circles[0][0][0] - 140
-            cn=circles[0][0][1] + 140
-            dn=circles[0][0][1] - 140
+            an = circles[0][0][0] + 140
+            bn = circles[0][0][0] - 140
+            cn = circles[0][0][1] + 140
+            dn = circles[0][0][1] - 140
             
             print circles
-            for i in circles[0,:]:
+            for i in circles[0, :]:
                 if i[0] >= bn and i[0] <= an and i[1] >= dn and i[1] <= cn :
                     continue
                 else:
@@ -160,84 +160,84 @@ while True:
                     i[1] = 0
                     i[2] = 0
             count = 0
-            for j in circles[0,:]:
+            for j in circles[0, :]:
                 if j[0] != 0:
                     count += 1
 
 	    print circles
 	    print count, "pips"	
             if count == 1:
-                GPIO.output(a,1)
-                GPIO.output(b,0)
-                GPIO.output(c,0)
-                GPIO.output(d,1)
-                GPIO.output(e,1)
-                GPIO.output(f,1)
-                GPIO.output(g,1)
+                GPIO.output(a, 1)
+                GPIO.output(b, 0)
+                GPIO.output(c, 0)
+                GPIO.output(d, 1)
+                GPIO.output(e, 1)
+                GPIO.output(f, 1)
+                GPIO.output(g, 1)
 
             elif count == 2:
-                GPIO.output(a,0)
-                GPIO.output(b,0)
-                GPIO.output(c,1)
-                GPIO.output(d,0)
-                GPIO.output(e,0)
-                GPIO.output(f,1)
-                GPIO.output(g,0)
+                GPIO.output(a, 0)
+                GPIO.output(b, 0)
+                GPIO.output(c, 1)
+                GPIO.output(d, 0)
+                GPIO.output(e, 0)
+                GPIO.output(f, 1)
+                GPIO.output(g, 0)
 
             elif count == 3:
-                GPIO.output(a,0)
-                GPIO.output(b,0)
-                GPIO.output(c,0)
-                GPIO.output(d,0)
-                GPIO.output(e,1)
-                GPIO.output(f,1)
-                GPIO.output(g,0)
+                GPIO.output(a, 0)
+                GPIO.output(b, 0)
+                GPIO.output(c, 0)
+                GPIO.output(d, 0)
+                GPIO.output(e, 1)
+                GPIO.output(f, 1)
+                GPIO.output(g, 0)
 
             elif count == 4:
-                GPIO.output(a,1)
-                GPIO.output(b,0)
-                GPIO.output(c,0)
-                GPIO.output(d,1)
-                GPIO.output(e,1)
-                GPIO.output(f,0)
-                GPIO.output(g,0)
+                GPIO.output(a, 1)
+                GPIO.output(b, 0)
+                GPIO.output(c, 0)
+                GPIO.output(d, 1)
+                GPIO.output(e, 1)
+                GPIO.output(f, 0)
+                GPIO.output(g, 0)
 
             elif count == 5:
-                GPIO.output(a,0)
-                GPIO.output(b,1)
-                GPIO.output(c,0)
-                GPIO.output(d,0)
-                GPIO.output(e,1)
-                GPIO.output(f,0)
-                GPIO.output(g,0)
+                GPIO.output(a, 0)
+                GPIO.output(b, 1)
+                GPIO.output(c, 0)
+                GPIO.output(d, 0)
+                GPIO.output(e, 1)
+                GPIO.output(f, 0)
+                GPIO.output(g, 0)
 
             elif count == 6:
-                GPIO.output(a,1)
-                GPIO.output(b,1)
-                GPIO.output(c,0)
-                GPIO.output(d,0)
-                GPIO.output(e,0)
-                GPIO.output(f,0)
-                GPIO.output(g,0)
+                GPIO.output(a, 1)
+                GPIO.output(b, 1)
+                GPIO.output(c, 0)
+                GPIO.output(d, 0)
+                GPIO.output(e, 0)
+                GPIO.output(f, 0)
+                GPIO.output(g, 0)
 
             else:
-                GPIO.output(a,0)
-                GPIO.output(b,0)
-                GPIO.output(c,0)
-                GPIO.output(d,0)
-                GPIO.output(e,0)
-                GPIO.output(f,0)
-                GPIO.output(g,1)
+                GPIO.output(a, 0)
+                GPIO.output(b, 0)
+                GPIO.output(c, 0)
+                GPIO.output(d, 0)
+                GPIO.output(e, 0)
+                GPIO.output(f, 0)
+                GPIO.output(g, 1)
 
-            GPIO.output(13,1) #success
+            GPIO.output(13, 1) #success
             time.sleep(0.003)
-            GPIO.output(13,0)
+            GPIO.output(13, 0)
             break
-        
+
         except AttributeError:
             print "No cirles detected"
             diestate = False
-            GPIO.output(15,0)
-            GPIO.output(15,1)   #failure
+
+            GPIO.output(15, 1)   #failure
             time.sleep(0.003)
-            GPIO.output(15,0)
+            GPIO.output(15, 0)
