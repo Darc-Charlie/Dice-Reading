@@ -22,17 +22,23 @@ GPIO.setup(37, GPIO.OUT)
 GPIO.setup(38, GPIO.OUT)
 GPIO.setup(40, GPIO.OUT)
 
+GPIO.output(11,0)
+GPIO.output(13,0)
+GPIO.output(15,0)
+print "waiting to read lid..."
+
 while True:
     lidState = GPIO.input(32)
 
     if lidState:
-        GPIO.output(13,1) #success
-        time.sleep(3)
-        GPIO.output(13,0)
-
         try:
-            print "reading lid..."
             port = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=5.0)
+
+            GPIO.output(13,1) #success
+            time.sleep(0.003)
+            GPIO.output(13,0)
+            port.write("#")
+
             os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
             img = cv2.imread('testimage.jpg', 0)
             img = cv2.resize(img, (1280, 960))
@@ -74,7 +80,7 @@ while True:
                     y_dist = l[1] - yCntr
             
             GPIO.output(13,1) #success
-            time.sleep(3)
+            time.sleep(0.003)
             GPIO.output(13,0)
 
             print "x-Dist:", x_dist
@@ -95,15 +101,16 @@ while True:
                         print 'down'
 
             GPIO.output(13,1) #success
-            time.sleep(3)
+            time.sleep(0.003)
             GPIO.output(13,0)
             break
 
         except AttributeError:
             print "No cirles detected"
             lidstate = False
+            GPIO.output(15,0)
             GPIO.output(15,1)   #failure
-            time.sleep(6)
+            time.sleep(0.003)
             GPIO.output(15,0)
 
 
@@ -115,6 +122,7 @@ e = 37
 f = 38
 g = 40
 
+print "waiting to read die..."
 
 while True:
     diestate = GPIO.input(32)
@@ -122,7 +130,6 @@ while True:
     if diestate:
 
         try:
-            print "reading die..."
             os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
             img = cv2.imread('testimage.jpg',0)
             img = cv2.resize(img, (1280, 960))
@@ -223,13 +230,14 @@ while True:
                 GPIO.output(g,1)
 
             GPIO.output(13,1) #success
-            time.sleep(3)
+            time.sleep(0.003)
             GPIO.output(13,0)
             break
         
         except AttributeError:
             print "No cirles detected"
             diestate = False
+            GPIO.output(15,0)
             GPIO.output(15,1)   #failure
-            time.sleep(6)
+            time.sleep(0.003)
             GPIO.output(15,0)
