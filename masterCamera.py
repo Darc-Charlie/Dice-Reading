@@ -1,19 +1,21 @@
+import os
+import math
 import cv2
 import numpy as np
-import os
 import serial
 import RPi.GPIO as GPIO
 import time
 
 print cv2.__version__
+centerThresh = 100                      #the center threshold
+lidRadius = 445                         #actual lid radius in pixels
+success = "#"                           #success character
+failure = "?"                           #failure character
 
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(32, GPIO.IN, GPIO.PUD_DOWN)
+GPIO.setmode(GPIO.BOARD)                #set mode of gpio to use board numbers
+GPIO.setup(32, GPIO.IN, GPIO.PUD_DOWN)  #set mode of pin 32 to an input pin
 
-GPIO.setup(11, GPIO.OUT) #undefined / ready pin
-GPIO.setup(13, GPIO.OUT) #success pin
-GPIO.setup(15, GPIO.OUT) #failure pin
-
+#initialize output pins for the 7-segment display.
 GPIO.setup(29, GPIO.OUT)
 GPIO.setup(31, GPIO.OUT)
 GPIO.setup(33, GPIO.OUT)
@@ -22,9 +24,9 @@ GPIO.setup(37, GPIO.OUT)
 GPIO.setup(38, GPIO.OUT)
 GPIO.setup(40, GPIO.OUT)
 
-GPIO.output(11, 0)
-GPIO.output(13, 0)
-GPIO.output(15, 0)
+#initialize the serial port communication
+port = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=5.0)
+
 print "waiting to read lid..."
 
 while True:
@@ -32,12 +34,7 @@ while True:
 
     if lidState:
         try:
-            port = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=5.0)
-
-            GPIO.output(13, 1) #success
-            time.sleep(0.003)
-            GPIO.output(13, 0)
-            port.write("#")
+            port.write(success) #success we recieved the start signal
 
             os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
             img = cv2.imread('testimage.jpg', 0)
@@ -45,15 +42,15 @@ while True:
             height, width = img.shape
             print width, height
 
+            #image's center coordinates
             xCntr = width/2
             yCntr = height/2
 
-            #445 = actual pixel radius
             img = cv2.medianBlur(img, 5)
             cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
             circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 50,
-                                        param1=50, param2=30, minRadius=400, maxRadius=450)
+                                       param1=50, param2=30, minRadius=400, maxRadius=450)
 
 
             circles = np.uint16(np.around(circles))
@@ -61,10 +58,14 @@ while True:
             closerCirc = 1000
             closerCircRadius = 0
             print circles
+
+            #find the radius of the detected circle that is closest to our lid's radius
             for j in circles[0, :]:
-                if abs(j[2] - 445) < closerCirc:
-                    closerCirc = abs(j[2] - 445)
+                if abs(j[2] - lidRadius) < closerCirc:
+                    closerCirc = abs(j[2] - lidRadius)
                     closerCircRadius = j[2]
+
+            #make the parameters of all but the closest circle 0. i.e null them
             for k in circles[0, :]:
                 if k[2] == closerCircRadius:
                     continue
@@ -74,18 +75,25 @@ while True:
                     k[2] = 0
 
             print circles
+
+            #find that closest circle and get our x and y distances
             for l in circles[0, :]:
                 if l[0] != 0:
                     x_dist = l[0] - xCntr
                     y_dist = l[1] - yCntr
 
-            GPIO.output(13, 1) #success
-            time.sleep(0.003)
-            GPIO.output(13, 0)
+            #grab the absolute distance between the cirlce centroid and the center of the image
+            distance = round(math.sqrt((pow(x_dist, 2)) + (pow(y_dist, 2))))
+
+            print "abs distance:", distance
+            #terminate lid reading if we are within our threshold
+            if distance <= centerThresh:
+                break
 
             print "x-Dist:", x_dist
             print "y-Dist:", y_dist
 
+            #send the distances to the arduino
             port.write(str(int(x_dist)))
             port.write(str(int(y_dist)))
 
@@ -100,19 +108,12 @@ while True:
                     else:
                         print 'down'
 
-            GPIO.output(13, 1) #success
-            time.sleep(0.003)
-            GPIO.output(13, 0)
-            break
-
         except AttributeError:
             print "No cirles detected"
             lidstate = False
-            GPIO.output(15, 0)
-            GPIO.output(15, 1)   #failure
-            time.sleep(0.003)
-            GPIO.output(15, 0)
+            port.write(failure)
 
+port.write(success) #we successfully centered over the cache lid
 
 a = 29
 b = 31
@@ -131,41 +132,45 @@ while True:
 
         try:
             os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
-            img = cv2.imread('testimage.jpg',0)
+            img = cv2.imread('testimage.jpg', 0)
             img = cv2.resize(img, (1280, 960))
             img = cv2.medianBlur(img, 5)
             cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
             circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 10,
-                                        param1=50, param2=30, minRadius=15, maxRadius=20)
+                                       param1=50, param2=30, minRadius=15, maxRadius=20)
 
 
             circles = np.uint16(np.around(circles))
 
-            GPIO.output(13, 1) #success
-            time.sleep(3)
-            GPIO.output(13, 0)
-
+            #method of filtering false positives
             an = circles[0][0][0] + 140
             bn = circles[0][0][0] - 140
             cn = circles[0][0][1] + 140
             dn = circles[0][0][1] - 140
-            
+
             print circles
+
+            #if the detected circles are not within these ranges they are false positives
+            #  hence filtered
             for i in circles[0, :]:
-                if i[0] >= bn and i[0] <= an and i[1] >= dn and i[1] <= cn :
+                if i[0] >= bn and i[0] <= an and i[1] >= dn and i[1] <= cn:
                     continue
                 else:
                     i[0] = 0
                     i[1] = 0
                     i[2] = 0
             count = 0
+
+            #count the number of pips
             for j in circles[0, :]:
                 if j[0] != 0:
                     count += 1
 
-	    print circles
-	    print count, "pips"	
+            print circles
+            print count, "pips"
+
+            #print the appropriate count number to the 7-segment display
             if count == 1:
                 GPIO.output(a, 1)
                 GPIO.output(b, 0)
@@ -229,15 +234,10 @@ while True:
                 GPIO.output(f, 0)
                 GPIO.output(g, 1)
 
-            GPIO.output(13, 1) #success
-            time.sleep(0.003)
-            GPIO.output(13, 0)
+            port.write(success) #success we read the die
             break
 
         except AttributeError:
             print "No cirles detected"
             diestate = False
-
-            GPIO.output(15, 1)   #failure
-            time.sleep(0.003)
-            GPIO.output(15, 0)
+            port.write(failure) #failure we didn't read the die
