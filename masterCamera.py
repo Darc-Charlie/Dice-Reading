@@ -11,6 +11,7 @@ centerThresh = 100                      #the center threshold
 lidRadius = 445                         #actual lid radius in pixels
 success = "#"                           #success character
 failure = "?"                           #failure character
+reCenter = "*"                          #recentering character
 
 GPIO.setmode(GPIO.BOARD)                #set mode of gpio to use board numbers
 GPIO.setup(32, GPIO.IN, GPIO.PUD_DOWN)  #set mode of pin 32 to an input pin
@@ -94,7 +95,9 @@ while True:
             print "y-Dist:", y_dist
 
             #send the distances to the arduino
+            port.write(reCenter)
             port.write(str(int(x_dist)))
+            port.write("\r\n")
             port.write(str(int(y_dist)))
 
             for j in circles[0, :]:
