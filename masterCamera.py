@@ -7,7 +7,7 @@ import RPi.GPIO as GPIO
 import time
 
 print cv2.__version__
-centerThresh = 100                      #the center threshold
+centerThresh = 200                      #the center threshold
 lidRadius = 445                         #actual lid radius in pixels
 success = "#"                           #success character
 failure = "?"                           #failure character
@@ -29,13 +29,24 @@ GPIO.setup(40, GPIO.OUT)
 port = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=5.0)
 
 print "waiting to read lid..."
+cherryPop = 1
+lidstate = False
 
 while True:
     lidState = GPIO.input(32)
 
     if lidState:
+        GPIO.output(29, 0)
+        GPIO.output(31, 0)
+        GPIO.output(33, 0)
+        GPIO.output(35, 0)
+        GPIO.output(37, 0)
+        GPIO.output(38, 0)
+        GPIO.output(40, 1)
         try:
-            port.write(success) #success we recieved the start signal
+            if cherryPop == 1:
+                port.write(success) #success we recieved the start signal
+                cherryPop = 0
 
             os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
             img = cv2.imread('testimage.jpg', 0)
@@ -134,14 +145,14 @@ while True:
     if diestate:
 
         try:
-            os.system("fswebcam -S 150 -r 800x600 --no-banner testimage.jpg")
-            img = cv2.imread('testimage.jpg', 0)
+            os.system("fswebcam -S 150 -r 800x600 --no-banner testimagePip.jpg")
+            img = cv2.imread('testimagePip.jpg', 0)
             img = cv2.resize(img, (1280, 960))
             img = cv2.medianBlur(img, 5)
             cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
             circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 10,
-                                       param1=50, param2=30, minRadius=15, maxRadius=20)
+                                       param1=50, param2=30, minRadius=15, maxRadius=30)
 
 
             circles = np.uint16(np.around(circles))
