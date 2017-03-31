@@ -27,7 +27,7 @@ GPIO.setup(40, GPIO.OUT)
 
 #initialize the serial port communication
 port = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=5.0)
-
+port.flushOutput()
 print "waiting to read lid..."
 cherryPop = 1
 lidstate = False

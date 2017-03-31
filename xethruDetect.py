@@ -61,16 +61,17 @@ def simple_xep_plot(device_name, bb = True):
     field = []
     field.append("s")
     readCell = False
-
+    
     while (count != 48):
         readCell = GPIO.input(15)
-
+        #raw_input("Press Enter to continue...")
+        
         if (readCell):
             count = count+1
             absFrame = abs(read_frame())
 
             for x in range(absFrame.shape[0]):
-                        absFrame[x] = absFrame[x]-defArray[x]
+                absFrame[x] = absFrame[x]-defArray[x]
             maxVal = 0
             for y in range(11):
                 if absFrame[y] > maxVal:
